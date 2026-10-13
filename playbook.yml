@@ -2,6 +2,7 @@
 - name: Caddy x DirectusCMS VPS Infra
   hosts: webservers
   become: true
+  gather_facts: false
 
   vars:
     app_dir: "/home/deploy/vps-infra"
@@ -11,6 +12,13 @@
     admin_password: ""
 
   tasks:
+    - name: Create Ansible temporary directory
+      ansible.builtin.raw: mkdir -p /tmp/.ansible/tmp
+      changed_when: false
+
+    - name: Gather facts
+      ansible.builtin.setup:
+
     - name: Ensure deploy user exists
       ansible.builtin.user:
         name: deploy
