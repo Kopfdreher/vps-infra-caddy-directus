@@ -1,0 +1,58 @@
+name: Deploy VPS
+
+on:
+  workflow_dispatch:
+    inputs:
+      ansible_user:
+        description: SSH user. Use root only for the first run on a new server.
+        default: deploy
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Ansible
+        run: |
+          pip install ansible
+          ansible-galaxy collection install ansible.posix community.general
+
+      - name: Install deploy key
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/hetzner_deploy
+          chmod 600 ~/.ssh/hetzner_deploy
+          ssh-keygen -y -f ~/.ssh/hetzner_deploy > ~/.ssh/hetzner_deploy.pub
+
+      - name: Write inventory
+        env:
+          VPS_IP: ${{ vars.VPS_IP }}
+          ANSIBLE_USER: ${{ inputs.ansible_user }}
+        run: |
+          printf '%s\n' \
+            '[webservers]' \
+            'hetzner_vps' \
+            '' \
+            '[webservers:vars]' \
+            "ansible_host=${VPS_IP}" \
+            "ansible_user=${ANSIBLE_USER}" \
+            "ansible_ssh_private_key_file=${HOME}/.ssh/hetzner_deploy" \
+            > inventory.ini
+
+      - name: Run playbook
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: "false"
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        run: |
+          ansible-playbook playbook.yml -i inventory.ini \
+            -e vps_ip="${{ vars.VPS_IP }}" \
+            -e admin_email="${{ vars.ADMIN_EMAIL }}" \
+            -e "admin_password=${ADMIN_PASSWORD}"

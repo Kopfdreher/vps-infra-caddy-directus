@@ -1,0 +1,12 @@
+# Directus CMS Subdomain
+cms.{{ vps_ip }}.sslip.io {
+    reverse_proxy directus:8055
+}
+
+# Main Frontend Site
+web.{{ vps_ip }}.sslip.io {
+    root * /var/www/frontend-main
+    encode gzip zstd
+    try_files {path} /index.html
+    file_server
+}

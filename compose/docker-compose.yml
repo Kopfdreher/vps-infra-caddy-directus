@@ -1,0 +1,75 @@
+name: vps-infra
+
+services:
+  caddy:
+    image: caddy:latest
+    container_name: caddy_proxy
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    networks:
+      - web
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+      - frontend_data:/var/www:ro
+    depends_on:
+      - directus
+
+  directus:
+    image: directus/directus:latest
+    container_name: directus_cms
+    restart: unless-stopped
+    user: "0:0"
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - web
+    env_file:
+      - .env
+    secrets:
+      - directus_key
+      - directus_secret
+      - admin_password
+    volumes:
+      - directus_database:/directus/database
+      - directus_uploads:/directus/uploads
+
+networks:
+  web:
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:
+  frontend_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/www
+  directus_database:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/deploy/vps-infra/database
+  directus_uploads:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/deploy/vps-infra/uploads
+
+secrets:
+  directus_key:
+    file: ./secrets/directus_key.txt
+  directus_secret:
+    file: ./secrets/directus_secret.txt
+  admin_password:
+    file: ./secrets/admin_password.txt
