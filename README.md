@@ -15,9 +15,11 @@ In **Settings → Environments → Deploy**, add:
 
 The public half of that key must be installed for `root` on a new server (Hetzner SSH key at create time).
 
-`inventory.ini` is not stored in git. **Actions → Deploy VPS → Run workflow** writes it from `VPS_IP` and the SSH user, then runs the playbook.
+`inventory.ini` is not stored in git. Each workflow writes it from `VPS_IP` before Ansible runs.
 
-On the first run against a new server, set the SSH user to `root`. After that, leave it as `deploy`. Root login and password login are turned off at the end of the first run.
+**Actions → Setup VPS** logs in as `root`. Use it once on a new or rebuilt server. It creates `deploy` and then turns off root SSH.
+
+**Actions → Maintain VPS** logs in as `deploy`. Use it for later changes.
 
 The admin password is applied only when the secret file does not exist yet. It does not change an admin user Directus has already created.
 

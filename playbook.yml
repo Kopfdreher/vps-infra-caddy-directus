@@ -164,7 +164,7 @@
 
     - name: Install provided admin password
       ansible.builtin.copy:
-        content: "{{ admin_password }}\n"
+        content: "{{ admin_password }}"
         dest: "{{ app_dir }}/secrets/admin_password.txt"
         owner: deploy
         group: deploy
@@ -174,7 +174,7 @@
 
     - name: Generate admin password when none was provided
       ansible.builtin.shell:
-        cmd: "openssl rand -hex 16 > {{ app_dir }}/secrets/admin_password.txt"
+        cmd: "openssl rand -hex 16 | tr -d '\\n' > {{ app_dir }}/secrets/admin_password.txt"
         creates: "{{ app_dir }}/secrets/admin_password.txt"
       when: admin_password | length == 0
 

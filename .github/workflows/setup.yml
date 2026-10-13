@@ -1,0 +1,20 @@
+name: Setup VPS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    environment: Deploy
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/deploy
+        with:
+          ansible_user: root
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          VPS_IP: ${{ vars.VPS_IP }}
+          ADMIN_EMAIL: ${{ vars.ADMIN_EMAIL }}
