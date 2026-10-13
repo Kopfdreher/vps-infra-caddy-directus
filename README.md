@@ -11,9 +11,10 @@ In **Settings → Environments → Deploy**, add:
 | Variable | `VPS_IP` | Server address and the sslip.io hostnames |
 | Variable | `ADMIN_EMAIL` | Directus admin email, written to `.env` on the server |
 | Secret | `ADMIN_PASSWORD` | Directus admin password, written once to `secrets/admin_password.txt` |
-| Secret | `DEPLOY_SSH_KEY` | Private key for `~/.ssh/hetzner_deploy` |
+| Secret | `DEPLOY_SSH_KEY` | Private key installed for the `deploy` user |
+| Secret | `ROOT_PASSWORD` | Hetzner root password, used only by Setup VPS |
 
-The public half of that key must be installed for `root` on a new server (Hetzner SSH key at create time).
+`ROOT_PASSWORD` is the password Hetzner shows after a rebuild. Setup logs in with it, installs the deploy key, then turns password login off. Maintain does not use that password.
 
 `inventory.ini` is not stored in git. Each workflow writes it from `VPS_IP` before Ansible runs.
 

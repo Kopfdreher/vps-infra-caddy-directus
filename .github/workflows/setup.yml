@@ -13,8 +13,10 @@ jobs:
       - uses: ./.github/actions/deploy
         with:
           ansible_user: root
+          use_password: "true"
         env:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          ROOT_PASSWORD: ${{ secrets.ROOT_PASSWORD }}
           VPS_IP: ${{ vars.VPS_IP }}
           ADMIN_EMAIL: ${{ vars.ADMIN_EMAIL }}
