@@ -11,6 +11,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: Deploy
     steps:
       - uses: actions/checkout@v4
 
@@ -28,7 +29,7 @@ jobs:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
         run: |
           if [ -z "$DEPLOY_SSH_KEY" ]; then
-            echo "DEPLOY_SSH_KEY is empty. Add the private key under Settings → Secrets and variables → Actions → Secrets."
+            echo "DEPLOY_SSH_KEY is empty. Add the private key to the Deploy environment secrets."
             exit 1
           fi
           install -m 700 -d ~/.ssh

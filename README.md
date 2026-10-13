@@ -4,7 +4,7 @@ Ansible prepares a fresh Ubuntu VPS and starts Caddy and Directus with rootless 
 
 ## GitHub settings
 
-In **Settings → Secrets and variables → Actions**:
+In **Settings → Environments → Deploy**, add:
 
 | Kind | Name | Used for |
 |---|---|---|
