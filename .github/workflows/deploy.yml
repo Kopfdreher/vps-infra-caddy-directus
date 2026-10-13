@@ -27,8 +27,12 @@ jobs:
         env:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
         run: |
+          if [ -z "$DEPLOY_SSH_KEY" ]; then
+            echo "DEPLOY_SSH_KEY is empty. Add the private key under Settings → Secrets and variables → Actions → Secrets."
+            exit 1
+          fi
           install -m 700 -d ~/.ssh
-          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/hetzner_deploy
+          printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' > ~/.ssh/hetzner_deploy
           chmod 600 ~/.ssh/hetzner_deploy
           ssh-keygen -y -f ~/.ssh/hetzner_deploy > ~/.ssh/hetzner_deploy.pub
 
