@@ -17,6 +17,7 @@ services:
   directus:
     image: directus/directus:latest
     restart: unless-stopped
+    user: "0:0"
     environment:
       NODE_OPTIONS: "--max-old-space-size=450"
       DB_CLIENT: "sqlite3"
