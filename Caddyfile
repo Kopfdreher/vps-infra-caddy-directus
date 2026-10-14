@@ -1,0 +1,17 @@
+{$BROTHER_DOMAIN} {
+    root * /srv/brother
+    encode gzip zstd
+    file_server
+    try_files {path} /index.html
+}
+
+{$WIFE_DOMAIN} {
+    root * /srv/wife
+    encode gzip zstd
+    file_server
+    try_files {path} /index.html
+}
+
+{$CMS_DOMAIN} {
+    reverse_proxy directus:8055
+}

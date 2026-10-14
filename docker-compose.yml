@@ -1,0 +1,37 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    env_file: .env
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./frontends:/srv:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - directus
+
+  directus:
+    image: directus/directus:latest
+    restart: unless-stopped
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=450"
+      DB_CLIENT: "sqlite3"
+      DB_FILENAME: "/directus/database/data.db"
+      PUBLIC_URL: "https://${CMS_DOMAIN}"
+      KEY: "${DIRECTUS_KEY}"
+      SECRET: "${DIRECTUS_SECRET}"
+      ADMIN_EMAIL: "${ADMIN_EMAIL}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
+      WEBSOCKETS_ENABLED: "false"
+      TELEMETRY: "false"
+    volumes:
+      - ./directus/database:/directus/database
+      - ./directus/uploads:/directus/uploads
+
+volumes:
+  caddy_data:
+  caddy_config:
